@@ -1,0 +1,67 @@
+<!-- page qui affiche le post  -->
+<div class="banner2">
+  <picture>
+    <source srcset="<%= data.bannerImages.ImgConvert %>" type="image/webp" />
+    <img
+      src="<%= data.bannerImages.ImgBase %>"
+      class="blog-image"
+      alt="<%= data.title %>"
+      width="800"
+      height="400"
+      loading="lazy"
+    />
+  </picture>
+</div>
+<div class="blog">
+  <h1 class="title"><%= data.title %></h1>
+  <p class="published">
+    <span>published at - </span><%= data.createdAt.toDateString() %>
+  </p>
+  <div class="markdown"><%- data.sanitizedHtml %></div>
+  <div class="author" itemscope itemtype="https://schema.org/Person">
+    <div class="img-author">
+      <img src="/img/author/moi.jpg" alt="Photo de le béchennec boris" />
+    </div>
+    <span class="author-name" itemprop="name">LE BÉCHENNEC Boris</span>
+  </div>
+</div>
+<div class="btn retour" style="display: inline-block; margin: 20px">
+  <a href="/blog" style="text-decoration: none">&slarr; Accueil</a>
+</div>
+<!-- blog section -->
+<!-- Affichage de 3 cartes au hasard -->
+<!-- prettier-ignore -->
+<section class="articles">
+  <% if (random3Posts && random3Posts.length > 0) { %>
+    <h3 class="sub-heading">Pour vous :</h3>
+    <div class="blogs-section">
+        <% random3Posts.forEach(post => { %>
+          <div class="blog-card">
+            <div class="card-image-wrapper">
+              <picture>
+                <source
+                  srcset="<%= post.bannerImages.smallImgConvert %>"
+                  type="image/webp"
+                />
+
+                <img
+                  src="<%= post.bannerImages.smallImgBase %>"
+                  class="blog-image-card"
+                  alt="<%= post.title %>"
+                />
+              </picture>
+            </div>
+            <div class="card-content-wrapper">
+              <h1 class="card-title"><%= post.title %></h1>
+              <p class="card-text"><%= post.description %></p>
+              <a href="/blog/post/<%= post._id %>" class="btn dark">read</a>
+              <span class="card-article-list__date">
+                <%= new Date(post.createdAt).toDateString() %>
+              </span>
+            </div>
+          </div>
+        <% }); %> 
+      </div>
+  <% } %>
+
+</section>

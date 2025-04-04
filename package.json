@@ -1,0 +1,61 @@
+{
+  "name": "mvdw",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "node server.js",
+    "blog-dev": "nodemon server.js",
+    "serve-dev": "concurrently \"npm run dev\" \"npm run blog-dev\"",
+    "prod": "npm run build && npm run start",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "_comments": {
+    "dev": "Lance le serveur de développement avec Vite.",
+    "build": "Compile le projet avec Vite pour une mise en production.",
+    "preview": "Lance un serveur local pour prévisualiser le projet après la compilation.",
+    "start": "Démarre le serveur Node.js en mode production.",
+    "blog-dev": "Démarre le backend (blog) en mode développement avec nodemon.",
+    "serve-dev": "Exécute simultanément le frontend (Vite) et le backend (nodemon).",
+    "prod": "Compile le projet et démarre le serveur Node.js en mode production.",
+    "test": "Affiche un message d'erreur générique indiquant qu'aucun test n'est spécifié."
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "nodemon": "^3.1.7",
+    "vite": "^5.4.1"
+  },
+  "dependencies": {
+    "@emailjs/browser": "^4.4.1",
+    "bcrypt": "^5.1.1",
+    "connect-mongo": "^5.1.0",
+    "cookie-parser": "^1.4.7",
+    "dompurify": "^3.2.3",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.21.1",
+    "express-ejs-layouts": "^2.5.1",
+    "express-fileupload": "^1.5.1",
+    "express-session": "^1.18.1",
+    "highlight.js": "^11.11.1",
+    "jsdom": "^25.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "lazysizes": "^5.3.2",
+    "markdown-it": "^14.1.0",
+    "markdown-it-attrs": "^4.3.1",
+    "markdown-it-container": "^4.0.0",
+    "markdown-it-emoji": "^3.0.0",
+    "markdown-it-footnote": "^4.0.0",
+    "marked": "^15.0.3",
+    "method-override": "^3.0.0",
+    "mongoose": "^8.8.0",
+    "sharp": "^0.33.5",
+    "twitter-api-v2": "^1.20.2",
+    "xmlbuilder2": "^3.1.1"
+  }
+}

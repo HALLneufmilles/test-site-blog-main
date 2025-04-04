@@ -1,0 +1,20 @@
+<!-- Affichage du résultat de la recherche - A ne pas confondre avec le fichier du même nom pour la barre de recherche -->
+
+<div class="intro">
+  <h1 class="intro__heading">Search Results</h1>
+</div>
+
+<section class="articles">
+  <ul class="article-ul">
+    <% data.forEach(post => { %>
+    <li>
+      <a href="/blog/post/<%= post._id %>">
+        <span class="result"><%= post.title %></span>
+        <span class="article-list__date"
+          ><%= post.createdAt.toDateString() %></span
+        >
+      </a>
+    </li>
+    <% }) %>
+  </ul>
+</section>

@@ -1,0 +1,182 @@
+<!-- main.ejs' est le Template layout principal de l'application. -->
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Google tag (gtag.js) A COPIER DANS CHAQUE PAGE !!!! -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-HWQQXGQ5V9"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-HWQQXGQ5V9");
+    </script>
+    <!-- Google tag -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- ✅ Optimisation pour Mobile et UI -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="MaVitrineDuWeb Blog" />
+    <meta name="apple-touch-fullscreen" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="theme-color" content="#000000" />
+
+    <!-- ✅ Icônes et favicons -->
+    <link rel="icon" type="image/svg+xml" href="/img/favicone/favicone.svg" />
+    <link rel="apple-touch-icon" href="/img/favicone/favicone-180.png" />
+
+    <!-- ✅ Gestion dynamique du titre et de la description -->
+    <% if (Array.isArray(data)) { %>
+    <!-- Page d'accueil du blog -->
+    <title>Le Blog - MaVitrineDuWeb</title>
+    <meta
+      name="description"
+      content="Découvrez nos articles sur la création de sites web professionnels à moindre coût et sans compromis sur la qualité."
+    />
+    <link rel="canonical" href="https://mavitrineduweb.fr/blog" />
+    <% } else if (typeof data === "object" && data !== null) { %>
+    <!-- Page d'un article -->
+    <title><%= data.title %> - Le Blog MVDW</title>
+    <meta name="description" content="<%= data.description %>" />
+    <link
+      rel="canonical"
+      href="https://mavitrineduweb.fr/blog/post/<%= data._id %>"
+    />
+    <% } %>
+
+    <!-- ✅ Préchargement des polices -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap"
+      rel="preload"
+      as="style"
+      crossorigin="anonymous"
+      onload="this.onload=null;this.rel='stylesheet'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap"
+      />
+    </noscript> -->
+
+    <!-- ✅ Styles et scripts -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css"
+    />
+    <link rel="stylesheet" href="/css/markdown.css" />
+    <link rel="stylesheet" href="/css/styleBlog.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/vs2015.min.css"
+    />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>
+      hljs.highlightAll();
+    </script>
+    <script type="text/javascript" defer src="/js/script.js"></script>
+
+    <!-- ✅ Open Graph et Twitter Cards -->
+    <% if (Array.isArray(data)) { %>
+    <meta property="og:title" content="Le Blog MaVitrineDuWeb" />
+    <meta
+      property="og:description"
+      content="Découvrez nos articles sur la création de sites professionnels à moindre coût, sans compromis sur la qualité."
+    />
+    <meta
+      property="og:image"
+      content="https://mavitrineduweb.fr/img/accueil/Accueil-1200x630.webp"
+    />
+    <meta property="og:url" content="https://mavitrineduweb.fr/blog" />
+    <meta property="og:type" content="website" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Le Blog MaVitrineDuWeb" />
+    <meta
+      name="twitter:description"
+      content="Découvrez nos articles sur la création de sites professionnels à moindre coût, sans compromis sur la qualité."
+    />
+    <meta
+      name="twitter:image"
+      content="https://mavitrineduweb.fr/img/accueil/Accueil-1200x630.jpg"
+    />
+    <meta name="twitter:url" content="https://mavitrineduweb.fr/blog" />
+    <% } else if (typeof data === "object" && data !== null) { %>
+    <meta property="og:title" content="<%= data.title %>" />
+    <meta property="og:description" content="<%= data.description %>" />
+    <meta property="og:image" content="<%= data.bannerImages.ImgConvert %>" />
+    <meta
+      property="og:url"
+      content="https://mavitrineduweb.fr/blog/post/<%= data._id %>"
+    />
+    <meta property="og:type" content="article" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="<%= data.title %>" />
+    <meta name="twitter:description" content="<%= data.description %>" />
+    <meta name="twitter:image" content="<%= data.bannerImages.ImgConvert %>" />
+    <meta
+      name="twitter:url"
+      content="https://mavitrineduweb.fr/blog/post/<%= data._id %>"
+    />
+    <% } %>
+
+    <!-- ✅ JSON-LD (uniquement pour les articles) -->
+    <% if (typeof data !== "undefined" && data && !Array.isArray(data)) { %>
+    <script type="application/ld+json">
+      <%- JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          "headline": data.title,
+          "description": data.description,
+          "image": data.bannerImages.ImgConvert,
+          "author": {
+              "@type": "Person",
+              "name": "LE BÉCHENNEC Boris"
+          },
+          "publisher": {
+              "@type": "Organization",
+              "name": "MaVitrineDuWeb",
+              "logo": {
+                  "@type": "ImageObject",
+                  "url": "https://mavitrineduweb.fr/img/logo/logo-mavitrineduweb-112.png"
+              }
+          },
+          "datePublished": data.createdAt.toISOString(),
+          "mainEntityOfPage": {
+              "@type": "WebPage",
+              "@id": "https://mavitrineduweb.fr/blog/post/" + data._id
+          }
+      }, null, 2) %>
+    </script>
+    <% } %>
+  </head>
+
+  <body>
+    <%- include('../partials/search.ejs') %>
+    <!-- prettier-ignore -->
+    <div class="container">
+      <%- include('../partials/header.ejs') %>
+        <main class="main">
+          <!-- 'body' réceptionne les  rendus des vues (situées dans le dossiers "views") et ses données envoyés par les fonctions render(), elles même situées dans les fichiers du dossier "routes" .  -->
+          <%- body %> 
+        </main>
+    </div>
+
+    <%- include('../partials/footer.ejs') %>
+    <script src="/js/script.js" defer></script>
+  </body>
+</html>

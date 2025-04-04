@@ -1,0 +1,105 @@
+<!-- 'index.ejs' est le fichier rendu dans le composant 'body' de 'main.ejs'. -->
+<!-- <div class="main"> -->
+
+<div class="intro">
+  <h1 class="hye-title">
+    <strong>MaVitrineDuWeb.fr</strong> <br />Sites Web <br />personnalisés<br />
+    A <strong>La Rochelle</strong> .
+  </h1>
+  <h2 class="intro__heading-2" data-text="LE BLOG">LE BLOG</h2>
+  <p class="presenting">
+    <span class="collapsed">
+      Ce blog est dédié à la <strong>Création de sites web</strong>
+      <strong>à moindre coût</strong> et
+      <strong>sans compromis sur la qualité</strong>. <br />Pour ceux qui
+      souhaitent découvrir comment créer un
+      <strong>site internet professionnel</strong> presque
+      <strong>gratuit</strong> en privilégiant des
+      <strong>solutions open source</strong>.
+    </span>
+    <span class="full-text" style="display: none">
+      Ce blog est dédié à la <strong>Création de sites web</strong>
+      <strong>à moindre coût</strong> et
+      <strong>sans compromis sur la qualité</strong>. <br />Pour ceux qui
+      souhaitent découvrir comment créer un
+      <strong>site internet professionnel</strong> presque
+      <strong>gratuit</strong> en privilégiant des
+      <strong>solutions open source</strong>. <br /><br />Nous explorons ces
+      solutions pour la conception de <strong>sites web autonomes</strong>, des
+      alternatives aux CMS payants, et des outils open source performants pour
+      développer des
+      <strong>sites e-commerce, sites vitrine, ou blogs</strong> sans avoir à
+      payer d'abonnement.
+      <strong>Suivez-nous pour des conseils</strong> pratiques, des comparatifs,
+      et des études de cas sur la création de sites web performants et sécurisés
+      avec des technologies <strong>open source</strong>.
+    </span>
+  </p>
+  <div class="read-actions">
+    <a href="#" class="read-more">... Lire la suite</a>
+    <a href="#" class="read-less" style="display: none">... Réduire</a>
+  </div>
+</div>
+<picture>
+  <source
+    srcset="/img/accueil-blog/accueil-mobile3.webp"
+    media="(max-width : 600px)"
+    type="image/webp"
+  />
+  <source srcset="/img/accueil-blog/cover-1000.webp" type="image/webp" />
+  <img
+    src="/img/accueil-blog/cover-1000.jpeg"
+    alt="person looking out through window"
+    class="hero-image"
+    width="981"
+    height="528"
+    loading="lazy"
+    importance="low"
+    fetchpriority="low"
+  />
+</picture>
+<section class="articles">
+  <h2 class="articles__heading">DERNIERS POSTS :</h2>
+  <!-- blog section -->
+  <div class="blogs-section">
+    <% data.forEach(post => { %>
+    <div class="blog-card">
+      <div class="card-image-wrapper">
+        <picture>
+          <source
+            srcset="<%= post.bannerImages.smallImgConvert %>"
+            type="image/webp"
+          />
+
+          <img
+            src="<%= post.bannerImages.smallImgBase %>"
+            class="blog-image-card"
+            alt="<%= post.title %>"
+            width="350"
+            height="150"
+            loading="lazy"
+          />
+        </picture>
+      </div>
+      <div class="card-content-wrapper">
+        <h1 class="card-title"><%= post.title %></h1>
+        <p class="card-text"><%- post.description %></p>
+        <a href="/blog/post/<%= post._id %>" class="btn dark">read</a>
+        <span class="card-article-list__date"
+          ><%= post.createdAt.toDateString() %></span
+        >
+      </div>
+    </div>
+    <% }) %>
+  </div>
+  <!-- prettier-ignore -->
+  <div class="pagination">
+      <% for (let i = 1; i <= Math.ceil(count / perPage); i++) { %> 
+        <% if (i == current) { %>
+          <a href="" class="pagination__current"><%= i %></a>
+        <% } else { %>
+          <a href="/blog/?page=<%= i %>" class="pagination__link"><%= i %></a>
+        <% } %> 
+      <% } %>
+    </div>
+</section>

@@ -1,0 +1,109 @@
+<!-- <a href="/dashboard">&larr; Back</a>
+<div class="admin-title">
+  <h2>Add New Post</h2>
+</div>
+
+<form action="/add-post" method="POST">
+  <label for="title"><b>Title</b></label>
+  <input type="text" placeholder="Post Title" name="title" />
+
+  <label for="body"><b>Content</b></label>
+  <textarea name="body" cols="50" rows="10"></textarea>
+
+  <div class="banner">
+    <input
+      type="file"
+      accept="image/*"
+      id="banner-upload"
+      name="image"
+      required
+    />
+    <label for="banner-upload" class="banner-upload-btn"
+      ><img src="img/upload.png" alt="upload banner"
+    /></label>
+  </div>
+
+  <input type="submit" value="Add" class="btn" />
+</form>
+
+<a href="/dashboard">&larr; Back</a>
+<div class="admin-title">
+  <h2>Add New Post</h2>
+</div> -->
+
+<!-- <form action="/add-post" method="POST" enctype="multipart/form-data">
+  <label for="title"><b>Title</b></label>
+  <input type="text" placeholder="Post Title" name="title" />
+
+  <label for="body"><b>Content</b></label>
+  <textarea name="body" cols="50" rows="10"></textarea>
+
+  <div class="div-banner" id="banner-edit">
+    <input type="file" accept="image/*" id="banner-upload" />
+    <label for="banner-upload" class="banner-upload-btn">
+      <img src="/img/upload.png" alt="upload banner" />
+    </label>
+  </div>
+
+  <div class="div-banner div-cards" id="card-edit">
+    <input type="file" accept="image/*" id="card-upload" />
+    <label for="card-upload" class="banner-upload-btn">
+      <img src="/img/upload.png" alt="upload banner" />
+    </label>
+  </div>
+
+  <input type="submit" value="Add" class="btn" />
+</form> -->
+
+<form action="/blog/add-post" method="POST" enctype="multipart/form-data">
+  <label for="title"><b>Title</b></label>
+  <input type="text" placeholder="Post Title" name="title" required />
+
+  <label for="description"><b>Description</b></label>
+  <textarea
+    id="textarea-description"
+    name="description"
+    cols="50"
+    rows="3"
+    placeholder="Une courte description"
+    required
+  ></textarea>
+
+  <label for="body"><b>Content</b></label>
+  <textarea
+    id="textarea-body"
+    name="body"
+    cols="50"
+    rows="10"
+    placeholder="Votre article ici"
+    required
+  ></textarea>
+  <emoji-picker id="emoji-picker">Chargement...</emoji-picker>
+  <p>Choisir un fichier au .jpg ou .png , Ratio 2/1</p>
+  <!-- l'image est chargée dans '<div class="div-banner" ... >' par 'editor.js' de 'admin.ejs'. -->
+  <div class="div-banner" id="banner-edit">
+    <input
+      type="file"
+      accept="image/*"
+      id="banner-upload"
+      name="bannerImage"
+      hidden
+      required
+    />
+    <label for="banner-upload" class="banner-upload-btn">
+      <img src="/img/upload.png" alt="upload banner" />
+    </label>
+  </div>
+
+  <input type="submit" value="Add" class="btn" />
+  <button
+    formaction="/blog/preview-addpost"
+    formmethod="POST"
+    class="btn btn-preview"
+  >
+    Preview
+  </button>
+  <!-- <button class="btn btn-close" onclick="window.history.back()">Cancel</button> -->
+
+  <a href="/blog/dashboard" class="btn">Cancel</a>
+</form>

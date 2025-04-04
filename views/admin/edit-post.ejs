@@ -1,0 +1,67 @@
+<div class="admin-title">
+  <h2>View / Edit Post</h2>
+
+  <form action="/blog/delete-post/<%= data._id %>?_method=DELETE" method="POST">
+    <input type="submit" value="Delete" class="btn-delete btn" />
+  </form>
+</div>
+
+<form
+  action="/blog/edit-post/<%= data._id %>?_method=PUT"
+  method="POST"
+  enctype="multipart/form-data"
+>
+  <label for="title"><b>Title</b></label>
+  <input
+    type="text"
+    placeholder="Post Title"
+    name="title"
+    value="<%= data.title %>"
+  />
+
+  <label for="description"><b>Description</b></label>
+  <textarea
+    id="textarea-description"
+    name="description"
+    cols="50"
+    rows="3"
+    placeholder="Add a short description for your post"
+  >
+<%= data.description || "" %></textarea
+  >
+
+  <label for="body"><b>Content</b></label>
+  <textarea name="body" id="textarea-body" cols="50" rows="10">
+<%= data.body %></textarea
+  >
+  <emoji-picker id="emoji-picker">Chargement...</emoji-picker>
+  <p>Choisir un fichier au .jpg ou .png , Ratio 2/1</p>
+  <!-- prettier-ignore-start -->
+  <div class="div-banner" id="banner-edit">
+    <input
+      type="file"
+      accept="image/*"
+      id="banner-upload"
+      name="bannerImage"
+      hidden
+    />
+    <label for="banner-upload" class="banner-upload-btn">
+      <img src="/img/upload.png" alt="upload banner" />
+    </label>
+  </div>
+  <div class="old-img">
+    <img src="<%=data.bannerImages.ImgBase%>" alt="ancienne image" />
+  </div>
+  <!-- prettier-ignore-end -->
+  <input type="submit" value="Update" class="btn" />
+  <!-- Bouton Preview -->
+  <button
+    formaction="/blog/preview-post/<%= data._id %>"
+    formmethod="POST"
+    class="btn btn-preview"
+  >
+    Preview
+  </button>
+  <!-- <button class="btn btn-close" onclick="window.history.back()">Cancel</button> -->
+  <a href="/blog/dashboard" class="btn">Cancel</a>
+</form>

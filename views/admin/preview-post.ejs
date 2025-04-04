@@ -1,0 +1,59 @@
+<!-- page qui affiche le post  -->
+<div class="mainPreview">
+  <div class="banner2">
+    <!-- Si une nouvelle image est chargé dans 'edit-post.ejs' , 'editor.js' la charge dans sessionStorage et 'preview.js' la remplace dans src . -->
+    <img
+      id="img-banner"
+      src="<%= data.bannerImage %>"
+      class="blog-image"
+      alt="<%= data.title %>"
+      width="800"
+      height="400"
+      loading="lazy"
+    />
+  </div>
+
+  <div class="back"></div>
+  <div class="blog">
+    <h1 class="title"><%= data.title %></h1>
+    <p class="published">
+      <span>published at - </span><%= data.createdAt ?
+      data.createdAt.toDateString() : 'Date invalide' %>
+    </p>
+    <div class="markdown"><%- data.sanitizedHtml %></div>
+    <div class="author" itemscope itemtype="https://schema.org/Person">
+      <div class="img-author">
+        <img src="/img/author/moi.jpg" alt="Photo de le béchennec boris" />
+      </div>
+      <span class="author-name" itemprop="name">LE BÉCHENNEC Boris</span>
+    </div>
+  </div>
+
+  <!-- Preview Carte -->
+  <section class="articles">
+    <div class="blogs-section">
+      <div class="blog-card">
+        <div class="card-image-wrapper">
+          <!-- Si une nouvelle image est chargé dans 'edit-post.ejs' , 'editor.js' la charge dans sessionStorage et 'preview.js' la remplace dans src . -->
+          <img
+            id="img-card"
+            src="<%= data.bannerImage %>"
+            class="blog-image"
+            alt="<%= data.title %>"
+          />
+        </div>
+        <div class="card-content-wrapper">
+          <h1 class="card-title"><%= data.title %></h1>
+          <p class="card-text"><%= data.description %></p>
+          <a href="" class="btn dark">read</a>
+          <span class="card-article-list__date">
+            <%= data.createdAt ? data.createdAt.toDateString() : 'Date invalide'
+            %>
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <button class="btn btn-close" onclick="window.history.back()">Close</button>
+</div>

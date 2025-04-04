@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /node_modules/
+Disallow: /server/
+Disallow: /views/
+
+Sitemap: https://mavitrineduweb.fr/sitemap.xml

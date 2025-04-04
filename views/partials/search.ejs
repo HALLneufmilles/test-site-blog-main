@@ -1,0 +1,76 @@
+<!-- Barre de recherche - A ne pas confondre le fichier du même nom qui affiche le résultat de la recherche -->
+<div class="searchBar">
+  <div class="container">
+    <!-- action="/search" : Lorsque le formulaire est soumis, il envoie une requête à l'URL /search. Comme la requête est POST, cela fait référence à la requête 'POST /search' dans 'main.js'.  -->
+
+    <!-- Contrairement à GET, les données ne sont pas envoyées dans l'URL. -->
+
+    <!-- Le formulaire envoie une "requête POST" liée à l'URL /search lorsque l'utilisateur valide avec submit ou entrer. -->
+    <!-- Une requête HTTP contient :
+    1- En prmière ligne, la méthode HTTP (GET, POST, etc.), le chemin de la ressource, et la version du protocole.
+    2- En-têtes de Requête (Headers) : Informations supplémentaires sur la requête, comme le type de contenu, le navigateur, etc.
+    3- Corps de la Requête (Body) : Contient les données à envoyer au serveur. -->
+
+    <!-- name="searchTerm" : Ce champ d'entrée est nommé "searchTerm", ce qui signifie que la valeur entrée par l'utilisateur sera mise dans le body de la requête et accessible via "searchTerm" côté serveur. -->
+
+    <!-- Dans 'main.js' on demande au serveur de surveiller les requêtes qui ressemble à 'POST /search'. Si une telle requête arrive du navigateur, la requête sera transformée en format JSON pour pouvoir être ensuite traitées par le server, grâce au middlewares de main.js :
+      app.use(express.urlencoded({ extended: true })); et app.use(express.json()); . -->
+
+    <form
+      action="/blog/search"
+      method="POST"
+      class="search__form"
+      role="search"
+    >
+      <input
+        type="search"
+        aria-label="Search"
+        id="searchInput"
+        name="searchTerm"
+        placeholder="Seach the site..."
+      />
+    </form>
+    <div id="searchClose">Fermer</div>
+  </div>
+</div>
+
+<!-- <div class="searchBar">
+  <div class="container"> -->
+<!-- action="/search" : Lorsque le formulaire est soumis, il envoie une requête à l'URL /search. 
+    Comme la requête utilise la méthode POST, elle sera traitée par la route 'POST /search' définie dans 'main.js'. -->
+
+<!-- Contrairement à la méthode GET, les données ne sont pas envoyées dans l'URL sous forme de paramètres, mais dans le "corps de la requête" (body). -->
+
+<!-- Le formulaire envoie une "requête (req ) POST" à l'URL /search lorsque l'utilisateur valide en cliquant sur "Submit" ou en appuyant sur la touche "Entrée". -->
+
+<!-- Une requête HTTP ( req ) contient :
+    1- En première ligne, la méthode HTTP (GET, POST, etc.), le chemin de la ressource, et la version du protocole.
+    2- En-têtes de Requête (Headers) : Informations supplémentaires sur la requête, comme le type de contenu envoyé, le type de contenu accepté, le navigateur utilisé, etc.
+    3- Corps de la Requête (Body) : Contient les données à envoyer au serveur (uniquement pour certaines méthodes comme POST, PUT, etc.). -->
+
+<!-- name="searchTerm" : Ce champ d'entrée est nommé "searchTerm", ce qui signifie que la valeur saisie par l'utilisateur sera envoyée dans le corps de la requête 
+    et sera accessible côté serveur sous le nom "searchTerm" via req.body.searchTerm. -->
+
+<!-- Dans 'main.js', on demande au serveur de surveiller les requêtes qui ressemblent à 'POST /search'. Si une telle requête arrive du navigateur,
+    la requête sera analysée (parsée) pour extraire les données du formulaire sous une forme utilisable grâce aux middlewares d'Express :
+      app.use(express.urlencoded({ extended: true })); 
+    Ce middleware permet de traiter les données encodées par le formulaire (application/x-www-form-urlencoded) pour qu'elles soient accessibles dans req.body. -->
+
+<!--     <form
+      action="/blog/search"
+      method="POST"
+      class="search__form"
+      role="search"
+    >
+      <input
+        type="search"
+        aria-label="Search"
+        id="searchInput"
+        name="searchTerm"
+        placeholder="Search the site..."
+      />
+    </form>
+    <div id="searchClose">Close</div>
+  </div>
+</div>
+ -->
