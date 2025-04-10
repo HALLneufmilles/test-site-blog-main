@@ -1,60 +1,3 @@
-<!-- <a href="/dashboard">&larr; Back</a>
-<div class="admin-title">
-  <h2>Add New Post</h2>
-</div>
-
-<form action="/add-post" method="POST">
-  <label for="title"><b>Title</b></label>
-  <input type="text" placeholder="Post Title" name="title" />
-
-  <label for="body"><b>Content</b></label>
-  <textarea name="body" cols="50" rows="10"></textarea>
-
-  <div class="banner">
-    <input
-      type="file"
-      accept="image/*"
-      id="banner-upload"
-      name="image"
-      required
-    />
-    <label for="banner-upload" class="banner-upload-btn"
-      ><img src="img/upload.png" alt="upload banner"
-    /></label>
-  </div>
-
-  <input type="submit" value="Add" class="btn" />
-</form>
-
-<a href="/dashboard">&larr; Back</a>
-<div class="admin-title">
-  <h2>Add New Post</h2>
-</div> -->
-
-<!-- <form action="/add-post" method="POST" enctype="multipart/form-data">
-  <label for="title"><b>Title</b></label>
-  <input type="text" placeholder="Post Title" name="title" />
-
-  <label for="body"><b>Content</b></label>
-  <textarea name="body" cols="50" rows="10"></textarea>
-
-  <div class="div-banner" id="banner-edit">
-    <input type="file" accept="image/*" id="banner-upload" />
-    <label for="banner-upload" class="banner-upload-btn">
-      <img src="/img/upload.png" alt="upload banner" />
-    </label>
-  </div>
-
-  <div class="div-banner div-cards" id="card-edit">
-    <input type="file" accept="image/*" id="card-upload" />
-    <label for="card-upload" class="banner-upload-btn">
-      <img src="/img/upload.png" alt="upload banner" />
-    </label>
-  </div>
-
-  <input type="submit" value="Add" class="btn" />
-</form> -->
-
 <form action="/blog/add-post" method="POST" enctype="multipart/form-data">
   <label for="title"><b>Title</b></label>
   <input type="text" placeholder="Post Title" name="title" required />
@@ -79,6 +22,95 @@
     required
   ></textarea>
   <emoji-picker id="emoji-picker">Chargement...</emoji-picker>
+
+  <!-- Zone d'upload des images d'illustration -->
+  <div class="product-info">
+    <!-- Zone d'affichage des images d'illustration -->
+    <div class="product-image">
+      <p class="text">Images d'illustration</p>
+    </div>
+    <!-- Champ pour le lien Markdown + bouton pour copier -->
+    <div class="illustration-link">
+      <input
+        type="text"
+        id="link-image"
+        readonly="true"
+        value=""
+        placeholder="Le lien Markdown s'affichera ici"
+      />
+      <button type="button" id="copy-link-btn">Copier</button>
+    </div>
+    <!-- upload section -->
+    <div class="upload-image-sec">
+      <p class="text"><img src="../img/camera.png" alt="" />Upload image</p>
+      <div class="upload-catalouge">
+        <div class="upload-wrapper" data-tempid="temp-illust-1">
+          <input
+            type="file"
+            class="fileupload"
+            id="first-file-upload-btn"
+            hidden
+            accept="image/png, image/jpeg"
+            name="illustrationImages"
+          />
+          <label for="first-file-upload-btn" class="upload-image">
+            <button class="delete-image" data-index="0" hidden>
+              <img src="../img/close.png" alt="" />
+            </button>
+          </label>
+        </div>
+
+        <div class="upload-wrapper" data-tempid="temp-illust-2">
+          <input
+            type="file"
+            class="fileupload"
+            id="second-file-upload-btn"
+            hidden
+            accept="image/png, image/jpeg"
+            name="illustrationImages"
+          />
+          <label for="second-file-upload-btn" class="upload-image">
+            <button class="delete-image" data-index="1" hidden>
+              <img src="../img/close.png" alt="" />
+            </button>
+          </label>
+        </div>
+
+        <div class="upload-wrapper" data-tempid="temp-illust-3">
+          <input
+            type="file"
+            class="fileupload"
+            id="third-file-upload-btn"
+            hidden
+            accept="image/png, image/jpeg"
+            name="illustrationImages"
+          />
+          <label for="third-file-upload-btn" class="upload-image">
+            <button class="delete-image" data-index="2" hidden>
+              <img src="../img/close.png" alt="" />
+            </button>
+          </label>
+        </div>
+
+        <div class="upload-wrapper" data-tempid="temp-illust-4">
+          <input
+            type="file"
+            class="fileupload"
+            id="fourth-file-upload-btn"
+            hidden
+            accept="image/png, image/jpeg"
+            name="illustrationImages"
+          />
+          <label for="fourth-file-upload-btn" class="upload-image">
+            <button class="delete-image" data-index="3" hidden>
+              <img src="../img/close.png" alt="" />
+            </button>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <p>Choisir un fichier au .jpg ou .png , Ratio 2/1</p>
   <!-- l'image est chargée dans '<div class="div-banner" ... >' par 'editor.js' de 'admin.ejs'. -->
   <div class="div-banner" id="banner-edit">

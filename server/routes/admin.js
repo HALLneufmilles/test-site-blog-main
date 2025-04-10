@@ -18,7 +18,10 @@ import { fileURLToPath } from "url";
 
 import fs from "fs/promises";
 
-import { processImage } from "../helpers/imageProcessor.js";
+import {
+  processImage,
+  processIllustrationImage
+} from "../helpers/imageProcessor.js";
 // dompurify pour nettoyer le HTML généréé par marked afin de supprimer tout contenu potentiellement dangereux (comme des balises <script> ou des événements JavaScript).
 import createDomPurify from "dompurify";
 import { JSDOM } from "jsdom";
@@ -195,34 +198,80 @@ router.get("/add-post", authMiddleware, async (req, res) => {
 
 router.post("/add-post", authMiddleware, async (req, res) => {
   try {
+    // 1) Vérifier l'image de bannière obligatoire
     if (!req.files || !req.files.bannerImage) {
-      return res.status(400).send("L'image est requise pour créer un post");
+      return res
+        .status(400)
+        .send("L'image de bannière est requise pour créer un post");
     }
 
+    // 2) Traiter la bannière (existant dans ton code)
     const bannerImages = await processImage(req.files.bannerImage);
 
+    // 3) Récupérer le body Markdown
+    let finalBody = req.body.body;
+
+    // 4) Déplacer les images d'illustration si nécessaire
+    //    On cherche toutes les occurrences de "temp/nom-de-fichier" dans finalBody
+    //    A) avec un RegEx
+    const regex = /\/temp\/([^\s)]+)/g;
+    // - /temp/ : littéral
+    // - ([^\s)]+) : capture tout ce qui n’est pas un espace ou une parenthèse fermante, jusqu’à la fin du groupe
+
+    // matchAll(...) renvoie un itérateur de tous les matchs
+    const matches = [...finalBody.matchAll(regex)];
+
+    // Pour chaque correspondance trouvée, on va:
+    //   - Extraire "nom-de-fichier" (capture group 1)
+    //   - fs.rename du fichier 'public/temp/nom-de-fichier' -> 'public/uploads/nom-de-fichier'
+    //   - Remplacer dans finalBody le "temp/nom-de-fichier" par "uploads/nom-de-fichier"
+    for (const match of matches) {
+      const fileName = match[1]; // "monFichier.webp", "xxxx.webp" etc.
+
+      // Chemin absolu vers temp et uploads
+      const tempPath = path.join(process.cwd(), "public", "temp", fileName);
+      const uploadPath = path.join(
+        process.cwd(),
+        "public",
+        "uploads",
+        fileName
+      );
+
+      try {
+        // Déplacer physiquement
+        await fs.rename(tempPath, uploadPath);
+        console.log(`Fichier déplacé : ${fileName}`);
+      } catch (err) {
+        // Si le fichier n'existe pas, on peut ignorer ou logguer
+        console.warn(
+          `Impossible de déplacer ${fileName} depuis temp -> uploads :`,
+          err
+        );
+      }
+
+      // Réécrire le lien dans finalBody
+      finalBody = finalBody.replaceAll(
+        `/temp/${fileName}`,
+        `/uploads/${fileName}`
+      );
+    }
+
+    // 5) Créer le post
     const newPost = new Post({
       title: req.body.title,
       description: req.body.description,
-      body: req.body.body,
+      body: finalBody,
       bannerImages
     });
 
     await newPost.save();
     console.log("newPost.save :", newPost);
 
-    const articleData = {
-      title: newPost.title,
-      description: newPost.description,
-      url: `https://mavitrineduweb.fr/blog/post/${newPost._id}`
-    };
-    console.log("articleData :", articleData);
-
     // Publier sur Twitter (X)
     // Appel à la fonction pour publier sur Twitter
     // await tweetArticleSummary(articleData);
 
-    // 3) (Optionnel) PING Google pour signaler la mise à jour du sitemap
+    // 6) PING Google pour signaler la mise à jour du sitemap
     // try {
     //   const pingUrl =
     //     "https://www.google.com/ping?sitemap=https://mavitrineduweb.fr/sitemap.xml";
@@ -232,6 +281,7 @@ router.post("/add-post", authMiddleware, async (req, res) => {
     //   console.error("Impossible de ping Google :", pingError);
     // }
 
+    // 7) Rediriger
     res.redirect("/blog/dashboard");
   } catch (error) {
     console.error(error);
@@ -309,74 +359,6 @@ router.get("/edit-post/:id", authMiddleware, async (req, res) => {
  * PUT  Admin - Edit post
  **/
 // *
-// Modifier un post
-/* Part 10 du tuto, time 7.37
-https://chatgpt.com/share/673e1cd8-ea44-800d-b7e7-a84618775dac */
-/* findByIdAndUpdate est une méthode de Mongoose utilisée pour trouver un document dans la collection MongoDB par son identifiant unique (_id) et le mettre à jour avec les nouvelles données fournies. */
-
-/* router.put("/edit-post/:id", authMiddleware, async (req, res) => {
-  try {
-    // Récupérer le document existant
-    const post = await Post.findById(req.params.id);
-    console.log("post put(/edit-post/:id before :", post);
-
-    if (!post) {
-      return res.status(404).send("Post introuvable");
-    }
-
-    // Mettre à jour les champs
-    post.title = req.body.title;
-    post.description = req.body.description;
-    post.body = req.body.body;
-    post.updatedAt = Date.now();
-
-    // Vérifier si une nouvelle image a été envoyée
-    if (req.files && req.files.bannerImage) {
-      // capter les anciennes images si une nouvelle image est envoyée
-      const { ImgBase, ImgConvert, smallImgBase, smallImgConvert } =
-        post.bannerImages;
-
-      // Supprimer les anciennes images de /public/uploads/
-      const filesToDelete = [
-        ImgBase,
-        ImgConvert,
-        smallImgBase,
-        smallImgConvert
-      ].map((file) => path.join(process.cwd(), "public", file));
-      for (const filePath of filesToDelete) {
-        try {
-          await fs.unlink(filePath); // Supprimer le fichier
-          console.log(`Fichier supprimé : ${filePath}`);
-        } catch (err) {
-          console.error(
-            `Erreur lors de la suppression de ${filePath}:`,
-            err.message
-          );
-        }
-      }
-
-      const bannerImages = await processImage(req.files.bannerImage);
-      post.bannerImages = bannerImages;
-      // console.log("Une nouvelle image a été envoyée :", req.files.bannerImage);
-    } else {
-      console.log("Aucune image n'a été envoyée.");
-    }
-
-    // Appeler save() applique les middlewares de Post.js, y compris pre("validate")
-    await post.save();
-
-    // Redirection après mise à jour
-    res.redirect("/dashboard");
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Erreur lors de la mise à jour du post");
-  }
-}); */
-
-/**
- * PUT  Admin - Edit post
- **/
-// *
 // Modifier un post existant :
 /* Part 10 du tuto, time 7.37 */
 router.put("/edit-post/:id", authMiddleware, async (req, res) => {
@@ -400,14 +382,14 @@ router.put("/edit-post/:id", authMiddleware, async (req, res) => {
     await post.save();
 
     // 3) (Optionnel) PING Google
-    try {
-      const pingUrl =
-        "https://www.google.com/ping?sitemap=https://mavitrineduweb.fr/sitemap.xml";
-      await fetch(pingUrl);
-      console.log("Ping Google Sitemap: succès !");
-    } catch (pingError) {
-      console.error("Impossible de ping Google :", pingError);
-    }
+    // try {
+    //   const pingUrl =
+    //     "https://www.google.com/ping?sitemap=https://mavitrineduweb.fr/sitemap.xml";
+    //   await fetch(pingUrl);
+    //   console.log("Ping Google Sitemap: succès !");
+    // } catch (pingError) {
+    //   console.error("Impossible de ping Google :", pingError);
+    // }
 
     res.redirect("/blog/dashboard");
   } catch (error) {
@@ -415,63 +397,6 @@ router.put("/edit-post/:id", authMiddleware, async (req, res) => {
     res.status(500).send("Erreur lors de la mise à jour du post");
   }
 });
-
-/* router.put("/edit-post/:id", authMiddleware, async (req, res) => {
-  try {
-    const post = await Post.findById(req.params.id);
-    if (!post) {
-      return res.status(404).send("Post introuvable");
-    }
-
-    // Mise à jour des champs
-    post.title = req.body.title;
-    post.description = req.body.description;
-    post.body = req.body.body;
-    post.updatedAt = Date.now();
-
-    // Vérification de la nouvelle image
-    if (req.files && req.files.bannerImage) {
-      const { ImgBase, ImgConvert, smallImgBase, smallImgConvert } =
-        post.bannerImages;
-
-      const filesToDelete = [
-        ImgBase,
-        ImgConvert,
-        smallImgBase,
-        smallImgConvert
-      ].map((file) => path.join(process.cwd(), "public", file));
-
-      // Suppression des anciennes images
-      for (const filePath of filesToDelete) {
-        try {
-          await fs.access(filePath); // Vérifie si le fichier existe
-          console.log(`Tentative de suppression : ${filePath}`);
-
-          await fs.unlink(filePath); // Supprime le fichier
-          console.log(`Fichier supprimé : ${filePath}`);
-        } catch (err) {
-          if (err.code === "ENOENT") {
-            console.log(`Fichier introuvable, déjà supprimé : ${filePath}`);
-          } else {
-            console.error(`Erreur lors de la suppression : ${filePath}`, err);
-          }
-        }
-      }
-
-      // Traitement de la nouvelle image
-      const bannerImages = await processImage(req.files.bannerImage);
-      post.bannerImages = bannerImages;
-    } else {
-      console.log("Aucune image n'a été envoyée.");
-    }
-
-    await post.save(); // Sauvegarde les modifications
-    res.redirect("/blog/dashboard");
-  } catch (error) {
-    console.error("Erreur lors de la mise à jour du post :", error);
-    res.status(500).send("Erreur lors de la mise à jour du post");
-  }
-}); */
 
 /**
  * POST Admin - Preview Post
@@ -515,105 +440,6 @@ router.post("/preview-post/:id", authMiddleware, async (req, res) => {
     res.status(500).send("Erreur lors de la prévisualisation du post");
   }
 });
-
-/* router.post("/preview-post/:id", authMiddleware, async (req, res) => {
-  try {
-    const locals = {
-      title: "Preview Post",
-      description: "Preview the post before updating."
-    };
-
-    // Récupérer le post existant pour obtenir les images actuelles
-    // const post = await Post.findById(req.body.postId);
-
-    const post = await Post.findById(req.params.id);
-    console.log("post :", post);
-
-    if (!post) {
-      return res.status(404).send("Post introuvable");
-    }
-
-    // Déterminer quelle image utiliser pour la prévisualisation
-    let bannerImage;
-    if (req.files?.bannerImage) {
-      console.log(
-        "Nouvelle image détectée pour la prévisualisation :",
-        req.files.bannerImage.name
-      );
-
-      // Créer un chemin vers le dossier uploads
-      const uploadsDir = path.join(process.cwd(), "public", "uploads");
-
-      // S'assurer que le dossier uploads existe
-      await fs.mkdir(uploadsDir, { recursive: true });
-
-      // Déplacer le fichier téléchargé dans le dossier uploads
-      const uploadPath = path.join(uploadsDir, req.files.bannerImage.name);
-      await req.files.bannerImage.mv(uploadPath);
-
-      // Utiliser ce chemin pour la prévisualisation
-      bannerImage = `/uploads/${req.files.bannerImage.name}`;
-    } else {
-      console.log(
-        "Utilisation de l'image existante dans 'post' pour la prévisualisation."
-      );
-
-      // Utiliser l'image existante
-      bannerImage = post.bannerImages.ImgBase;
-    }
-
-    // Récupérer les autres données pour la prévisualisation
-    const data = {
-      _id: req.params.id,
-      title: req.body.title,
-      description: req.body.description,
-      body: req.body.body,
-      // bannerImage,
-      createdAt: post.createdAt, // Conserver la date de création
-      sanitizedHtml: dompurify.sanitize(marked.parse(req.body.body))
-    };
-
-    // Rendre la vue de prévisualisation
-    res.render("admin/preview-post", {
-      locals,
-      data,
-      layout: adminLayout
-    });
-  } catch (error) {
-    console.error("Erreur lors de la prévisualisation du post :", error);
-    res.status(500).send("Erreur lors de la prévisualisation du post");
-  }
-}); */
-
-/* router.post("/preview-post", authMiddleware, async (req, res) => {
-  try {
-    const locals = {
-      title: "Preview Post",
-      description: "Preview the post before updating."
-    };
-    // console.log("req.files.bannerImage :", req.files.bannerImage);
-
-    // Récupérer les données soumises dans le formulaire
-    const data = {
-      title: req.body.title,
-      description: req.body.description,
-      body: req.body.body,
-      bannerImage: req.files?.bannerImage?.name || "/img/default-img.png",
-      createdAt: new Date(),
-      sanitizedHtml: dompurify.sanitize(marked.parse(req.body.body))
-    };
-    console.log("data :", data);
-
-    res.render("admin/preview-post", {
-      locals,
-      data,
-      layout: adminLayout
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).send("Erreur lors de la prévisualisation du post");
-  }
-}); */
 
 /**
  * POST  Admin - Register
@@ -678,47 +504,6 @@ router.delete("/delete-post/:id", authMiddleware, async (req, res) => {
   }
 });
 
-/* router.delete("/delete-post/:id", authMiddleware, async (req, res) => {
-  try {
-    // suppression des images du dossier "upload".
-    const post = await Post.findById(req.params.id);
-    if (!post) {
-      return res.status(404).send("Post introuvable");
-    }
-    const { ImgBase, ImgConvert, smallImgBase, smallImgConvert } =
-      post.bannerImages;
-
-    const filesToDelete = [
-      ImgBase,
-      ImgConvert,
-      smallImgBase,
-      smallImgConvert
-    ].map((file) => path.join(process.cwd(), "public", file));
-
-    // Suppression des anciennes images
-    for (const filePath of filesToDelete) {
-      try {
-        await fs.access(filePath); // Vérifie si le fichier existe
-        console.log(`Tentative de suppression : ${filePath}`);
-
-        await fs.unlink(filePath); // Supprime le fichier
-        console.log(`Fichier supprimé : ${filePath}`);
-      } catch (err) {
-        if (err.code === "ENOENT") {
-          console.log(`Fichier introuvable, déjà supprimé : ${filePath}`);
-        } else {
-          console.error(`Erreur lors de la suppression : ${filePath}`, err);
-        }
-      }
-    }
-    // suppression de l'article de la base de données.
-    await Post.deleteOne({ _id: req.params.id });
-    res.redirect("/blog/dashboard");
-  } catch (error) {
-    console.log(error);
-  }
-}); */
-
 /**
  * GET  Admin - Logout
  **/
@@ -730,3 +515,21 @@ router.get("/logout", (req, res) => {
 });
 
 export default router;
+
+// Ajouter une image d'illustration
+router.post("/upload-illustration", authMiddleware, async (req, res) => {
+  try {
+    if (!req.files || !req.files.image) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Aucune image fournie." });
+    }
+
+    const imageUrl = await processIllustrationImage(req.files.image);
+
+    res.json({ success: true, imageUrl });
+  } catch (error) {
+    console.error("Erreur d'upload d'illustration :", error);
+    res.status(500).json({ success: false, message: "Erreur serveur." });
+  }
+});
